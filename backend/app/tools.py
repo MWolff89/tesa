@@ -54,81 +54,81 @@ def get_retrieval_tool(assistant_id: str, description: str):
     )
 
 
-@lru_cache(maxsize=1)
-def _get_duck_duck_go():
-    return DuckDuckGoSearchRun(args_schema=DDGInput)
+# @lru_cache(maxsize=1)
+# def _get_duck_duck_go():
+#     return DuckDuckGoSearchRun(args_schema=DDGInput)
 
 
-@lru_cache(maxsize=1)
-def _get_arxiv():
-    return ArxivQueryRun(api_wrapper=ArxivAPIWrapper(), args_schema=ArxivInput)
+# @lru_cache(maxsize=1)
+# def _get_arxiv():
+#     return ArxivQueryRun(api_wrapper=ArxivAPIWrapper(), args_schema=ArxivInput)
 
 
-@lru_cache(maxsize=1)
-def _get_you_search():
-    return create_retriever_tool(
-        YouRetriever(n_hits=3, n_snippets_per_hit=3),
-        "you_search",
-        "Searches for documents using You.com",
-    )
+# @lru_cache(maxsize=1)
+# def _get_you_search():
+#     return create_retriever_tool(
+#         YouRetriever(n_hits=3, n_snippets_per_hit=3),
+#         "you_search",
+#         "Searches for documents using You.com",
+#     )
 
 
-@lru_cache(maxsize=1)
-def _get_sec_filings():
-    return create_retriever_tool(
-        KayAiRetriever.create(
-            dataset_id="company", data_types=["10-K", "10-Q"], num_contexts=3
-        ),
-        "sec_filings_search",
-        "Search for a query among SEC Filings",
-    )
+# @lru_cache(maxsize=1)
+# def _get_sec_filings():
+#     return create_retriever_tool(
+#         KayAiRetriever.create(
+#             dataset_id="company", data_types=["10-K", "10-Q"], num_contexts=3
+#         ),
+#         "sec_filings_search",
+#         "Search for a query among SEC Filings",
+#     )
 
 
-@lru_cache(maxsize=1)
-def _get_press_releases():
-    return create_retriever_tool(
-        KayAiRetriever.create(
-            dataset_id="company", data_types=["PressRelease"], num_contexts=6
-        ),
-        "press_release_search",
-        "Search for a query among press releases from US companies",
-    )
+# @lru_cache(maxsize=1)
+# def _get_press_releases():
+#     return create_retriever_tool(
+#         KayAiRetriever.create(
+#             dataset_id="company", data_types=["PressRelease"], num_contexts=6
+#         ),
+#         "press_release_search",
+#         "Search for a query among press releases from US companies",
+#     )
 
 
-@lru_cache(maxsize=1)
-def _get_pubmed():
-    return create_retriever_tool(
-        PubMedRetriever(), "pub_med_search", "Search for a query on PubMed"
-    )
+# @lru_cache(maxsize=1)
+# def _get_pubmed():
+#     return create_retriever_tool(
+#         PubMedRetriever(), "pub_med_search", "Search for a query on PubMed"
+#     )
 
 
-@lru_cache(maxsize=1)
-def _get_wikipedia():
-    return create_retriever_tool(
-        WikipediaRetriever(), "wikipedia", "Search for a query on Wikipedia"
-    )
+# @lru_cache(maxsize=1)
+# def _get_wikipedia():
+#     return create_retriever_tool(
+#         WikipediaRetriever(), "wikipedia", "Search for a query on Wikipedia"
+#     )
 
 
-@lru_cache(maxsize=1)
-def _get_tavily():
-    tavily_search = TavilySearchAPIWrapper()
-    return TavilySearchResults(api_wrapper=tavily_search)
+# @lru_cache(maxsize=1)
+# def _get_tavily():
+#     tavily_search = TavilySearchAPIWrapper()
+#     return TavilySearchResults(api_wrapper=tavily_search)
 
 
-@lru_cache(maxsize=1)
-def _get_tavily_answer():
-    tavily_search = TavilySearchAPIWrapper()
-    return TavilyAnswer(api_wrapper=tavily_search)
+# @lru_cache(maxsize=1)
+# def _get_tavily_answer():
+#     tavily_search = TavilySearchAPIWrapper()
+#     return TavilyAnswer(api_wrapper=tavily_search)
 
 
-@lru_cache(maxsize=1)
-def _get_action_server():
-    toolkit = ActionServerToolkit(
-        url=os.environ.get("ROBOCORP_ACTION_SERVER_URL"),
-        api_key=os.environ.get("ROBOCORP_ACTION_SERVER_KEY"),
-    )
-    tools = toolkit.get_tools()
-    return tools
+# @lru_cache(maxsize=1)
+# def _get_action_server():
+#     toolkit = ActionServerToolkit(
+#         url=os.environ.get("ROBOCORP_ACTION_SERVER_URL"),
+#         api_key=os.environ.get("ROBOCORP_ACTION_SERVER_KEY"),
+#     )
+#     tools = toolkit.get_tools()
+#     return tools
 
 
 @lru_cache(maxsize=1)
@@ -143,32 +143,32 @@ def _get_connery_actions():
 
 
 class AvailableTools(str, Enum):
-    ACTION_SERVER = "Action Server by Robocorp"
+    # ACTION_SERVER = "Action Server by Robocorp"
     CONNERY = '"AI Action Runner" by Connery'
-    DDG_SEARCH = "DDG Search"
-    TAVILY = "Search (Tavily)"
-    TAVILY_ANSWER = "Search (short answer, Tavily)"
+    # DDG_SEARCH = "DDG Search"
+    # TAVILY = "Search (Tavily)"
+    # TAVILY_ANSWER = "Search (short answer, Tavily)"
     RETRIEVAL = "Retrieval"
-    ARXIV = "Arxiv"
-    YOU_SEARCH = "You.com Search"
-    SEC_FILINGS = "SEC Filings (Kay.ai)"
-    PRESS_RELEASES = "Press Releases (Kay.ai)"
-    PUBMED = "PubMed"
-    WIKIPEDIA = "Wikipedia"
+    # ARXIV = "Arxiv"
+    # YOU_SEARCH = "You.com Search"
+    # SEC_FILINGS = "SEC Filings (Kay.ai)"
+    # PRESS_RELEASES = "Press Releases (Kay.ai)"
+    # PUBMED = "PubMed"
+    # WIKIPEDIA = "Wikipedia"
 
 
 TOOLS = {
-    AvailableTools.ACTION_SERVER: _get_action_server,
+    # AvailableTools.ACTION_SERVER: _get_action_server,
     AvailableTools.CONNERY: _get_connery_actions,
-    AvailableTools.DDG_SEARCH: _get_duck_duck_go,
-    AvailableTools.ARXIV: _get_arxiv,
-    AvailableTools.YOU_SEARCH: _get_you_search,
-    AvailableTools.SEC_FILINGS: _get_sec_filings,
-    AvailableTools.PRESS_RELEASES: _get_press_releases,
-    AvailableTools.PUBMED: _get_pubmed,
-    AvailableTools.TAVILY: _get_tavily,
-    AvailableTools.WIKIPEDIA: _get_wikipedia,
-    AvailableTools.TAVILY_ANSWER: _get_tavily_answer,
+    # AvailableTools.DDG_SEARCH: _get_duck_duck_go,
+    # AvailableTools.ARXIV: _get_arxiv,
+    # AvailableTools.YOU_SEARCH: _get_you_search,
+    # AvailableTools.SEC_FILINGS: _get_sec_filings,
+    # AvailableTools.PRESS_RELEASES: _get_press_releases,
+    # AvailableTools.PUBMED: _get_pubmed,
+    # AvailableTools.TAVILY: _get_tavily,
+    # AvailableTools.WIKIPEDIA: _get_wikipedia,
+    # AvailableTools.TAVILY_ANSWER: _get_tavily_answer,
 }
 
 TOOL_OPTIONS = {e.value: e.value for e in AvailableTools}
