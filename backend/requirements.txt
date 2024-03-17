@@ -9,3 +9,4 @@ python-multipart
 langchain-robocorp>=0.0.1
 langchain-google-vertexai==0.0.3
 uvicorn==0.23.2
+langchain-openai==0.0.5
