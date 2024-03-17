@@ -20,15 +20,15 @@ export function NewChat(props: NewChatProps) {
       )}
     >
       <div className="flex-1 flex flex-col md:flex-row lg:items-stretch self-stretch">
-        <div className="w-72 border-r border-gray-200 pr-6">
+        {/* <div className="w-72 border-r border-gray-200 pr-6">
           <ConfigList
             configs={props.configs}
             currentConfig={props.currentConfig}
             enterConfig={props.enterConfig}
           />
-        </div>
+        </div> */}
 
-        <main className="flex-1">
+        {/* <main className="flex-1">
           <div className="px-4">
             <Config
               key={props.currentConfig?.assistant_id}
@@ -38,7 +38,7 @@ export function NewChat(props: NewChatProps) {
               saveConfig={props.saveConfig}
             />
           </div>
-        </main>
+        </main> */}
       </div>
       <div className="fixed left-0 lg:left-72 bottom-0 right-0 p-4">
         <TypingBox onSubmit={props.startChat} />

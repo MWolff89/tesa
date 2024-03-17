@@ -49,5 +49,13 @@ export function useSchemas() {
     save();
   }, []);
 
+  // Sample Input
+  // Pred forte QID OS
+  // Cosopt TID OU
+  // Latanoprost BID OS
+  // I-drop vet gel BID OU
+  // Cyclosporine Ointment BID OU
+  // Chloramphenicol BIG OS
+
   return schemas;
 }

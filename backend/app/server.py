@@ -11,7 +11,7 @@ from app.upload import ingest_runnable
 
 logger = logging.getLogger(__name__)
 
-app = FastAPI(title="OpenGPTs API")
+app = FastAPI(title="Tesa Agent API")
 
 
 # Get root of app, used to point to directory containing static files

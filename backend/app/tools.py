@@ -1,4 +1,5 @@
 import os
+import csv
 from enum import Enum
 from functools import lru_cache
 
@@ -18,6 +19,15 @@ from langchain_community.utilities.arxiv import ArxivAPIWrapper
 from langchain_community.utilities.tavily_search import TavilySearchAPIWrapper
 from langchain_community.vectorstores.redis import RedisFilter
 from langchain_robocorp import ActionServerToolkit
+from langchain.tools import tool, BaseTool
+from typing import Optional, Type
+from langchain.callbacks.manager import (
+    AsyncCallbackManagerForToolRun,
+    CallbackManagerForToolRun,
+)
+
+import boto3
+from botocore.exceptions import NoCredentialsError
 
 from app.upload import vstore
 
@@ -53,6 +63,158 @@ def get_retrieval_tool(assistant_id: str, description: str):
         description,
     )
 
+class CSVInput(BaseModel):
+    header: list[str] = Field(description="The header of the CSV file")
+    data: list[list[str]] = Field(description="The data of the CSV file")
+    file_name: str = Field(description="The file name of the CSV file")
+
+def create_csv(header, data, file_name):
+    folder_path = "data"
+    csv_file = os.path.join(folder_path, file_name)
+    # TODEL
+    csv_output = csv_file + ".csv"
+    #TODEL
+    
+    # Ensure the folder exists
+    os.makedirs(folder_path, exist_ok=True)
+    
+    # Writing to the CSV file
+    with open(csv_file, 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        
+        # Writing the header
+        writer.writerow(header)
+        
+        # Writing the data rows
+        for row in data:
+            writer.writerow(row)
+
+    return csv_file
+
+def upload_file_to_wasabi(file_name):
+    """
+    Upload a file to Wasabi Hot Cloud Storage and make it publicly accessible.
+
+    :param file_name: File to upload
+    :return: Public URL of the uploaded file
+    """
+
+    wasabi_region = 'ap-southeast-1'
+    bucket_name = 'tesa-medication-schedules'
+    object_name = None
+
+    if object_name is None:
+        object_name = file_name.split('/')[-1]
+
+    s3_client = boto3.client('s3', 
+                             endpoint_url=f'https://s3.{wasabi_region}.wasabisys.com',
+                             aws_access_key_id=os.environ['WASABI_ACCESS_KEY'],
+                             aws_secret_access_key=os.environ['WASABI_SECRET_KEY'],
+                             region_name=wasabi_region)  # Endpoint and auth for Wasabi
+    
+    file_path = os.path.join('data', file_name)
+
+    try:
+        s3_client.upload_file(file_path, bucket_name, object_name, 
+                              ExtraArgs={'ACL': 'public-read'})  # Make file public
+        url = f"https://{bucket_name}.s3.{wasabi_region}.wasabisys.com/{object_name}"
+        return url
+    except NoCredentialsError:
+        print("Credentials not available")
+        return None
+
+def upload_file_to_s3(file_name):
+    """
+    Upload a file to Amazon S3 and make it publicly accessible.
+
+    :param file_name: File to upload
+    :return: Public URL of the uploaded file
+    """
+
+    s3_region = 'ap-southeast-1'  # S3 region
+    bucket_name = 'tesa-medication-schedules';  # Replace with your bucket name
+    object_name = None
+
+    if object_name is None:
+        object_name = os.path.basename(file_name)
+
+    s3_client = boto3.client('s3', 
+                             aws_access_key_id=os.environ['AWS_ACCESS_KEY_ID'],
+                             aws_secret_access_key=os.environ['AWS_SECRET_ACCESS_KEY'],
+                             region_name=s3_region)  # Endpoint and auth for S3
+    
+    file_path = os.path.join('data', file_name)
+
+    try:
+        s3_client.upload_file(file_path, bucket_name, object_name, 
+                              ExtraArgs={'ACL': 'public-read'})  # Make file public
+        url = f"https://{bucket_name}.s3.{s3_region}.amazonaws.com/{object_name}"
+        return url
+    except Exception as e:
+        print(f"Error uploading file to S3: {e}")
+        return None
+
+
+def get_all_files_in_data_folder(folder_path="data"):
+    files = os.listdir(folder_path)
+    return files
+
+class CreateCSV(BaseTool):
+    name = "create_csv"
+    description = "Create a CSV file with the given header and data."
+    args_schema: Type[BaseModel] = CSVInput
+
+    def _run(
+        self, header: list[str], data: list[list[str]], file_name: str, run_manager: Optional[CallbackManagerForToolRun] = None
+    ) -> str:
+        """Use the tool."""
+        return create_csv(header, data, file_name)
+
+    async def _arun(
+        self, header: list[str], data: list[list[str]], file_name: str, run_manager: Optional[AsyncCallbackManagerForToolRun] = None
+    ) -> str:
+        """Use the tool asynchronously."""
+        return create_csv(header, data, file_name)
+
+class UploadCSVInput(BaseModel):
+    file_name: str = Field(description="The file name of the CSV file")
+
+class UploadCSV(BaseTool):
+    name = "upload_csv"
+    description = "Upload a CSV file to Wasabi Hot Cloud Storage."
+    args_schema: Type[BaseModel] = UploadCSVInput
+
+    def _run(
+        self, file_name: str, run_manager: Optional[CallbackManagerForToolRun] = None
+    ) -> str:
+        """Use the tool."""
+        return upload_file_to_s3(file_name)
+
+    async def _arun(
+        self, file_name: str, run_manager: Optional[AsyncCallbackManagerForToolRun] = None
+    ) -> str:
+        """Use the tool asynchronously."""
+        return upload_file_to_s3(file_name)
+
+class GetAllFilesInput(BaseModel):
+    folder_path: str = Field(description="The folder path to get the files from")
+
+class GetFilesInDataFolder(BaseTool):
+    name = "get_files_medication_schedules_in_data_folder"
+    description = "Get all files / generated medication schedules in the data folder."
+    args_schema: Type[BaseModel] = GetAllFilesInput
+
+    def _run(
+        self, folder_path: str, run_manager: Optional[CallbackManagerForToolRun] = None
+    ) -> list[str]:
+        """Use the tool."""
+        return get_all_files_in_data_folder(folder_path="data")
+
+    async def _arun(
+        self, folder_path: str, run_manager: Optional[AsyncCallbackManagerForToolRun] = None
+    ) -> list[str]:
+        """Use the tool asynchronously."""
+        return get_all_files_in_data_folder(folder_path="data")
 
 # @lru_cache(maxsize=1)
 # def _get_duck_duck_go():
@@ -155,6 +317,9 @@ class AvailableTools(str, Enum):
     # PRESS_RELEASES = "Press Releases (Kay.ai)"
     # PUBMED = "PubMed"
     # WIKIPEDIA = "Wikipedia"
+    CREATE_CSV = "Create CSV"
+    UPLOAD_CSV = "Upload CSV"
+    GET_ALL_FILES = "Get all files in data folder"
 
 
 TOOLS = {
@@ -169,6 +334,9 @@ TOOLS = {
     # AvailableTools.TAVILY: _get_tavily,
     # AvailableTools.WIKIPEDIA: _get_wikipedia,
     # AvailableTools.TAVILY_ANSWER: _get_tavily_answer,
+    AvailableTools.CREATE_CSV: CreateCSV,
+    AvailableTools.UPLOAD_CSV: UploadCSV,
+    AvailableTools.GET_ALL_FILES: get_all_files_in_data_folder,
 }
 
 TOOL_OPTIONS = {e.value: e.value for e in AvailableTools}
