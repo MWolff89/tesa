@@ -35,7 +35,7 @@ export function ChatList(props: {
         <span className="truncate">New Chat</span>
       </div>
 
-      <div
+      {/* <div
         onClick={() => props.enterConfig(null)}
         className={cn(
           props.currentConfig === null
@@ -55,7 +55,7 @@ export function ChatList(props: {
           <PlusIcon className="h-4 w-4" />
         </span>
         <span className="truncate">New Bot</span>
-      </div>
+      </div> */}
 
       <div className="text-xs font-semibold leading-6 text-gray-400 mt-4">
         Your chats
