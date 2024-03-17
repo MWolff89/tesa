@@ -399,160 +399,160 @@ export function Config(props: {
     </>
   );
   return (
-    <div></div>
-    // <form
-    //   className={cn("flex flex-col", props.className)}
-    //   onSubmit={async (e) => {
-    //     e.preventDefault();
-    //     e.stopPropagation();
-    //     const form = e.target as HTMLFormElement;
-    //     const key = form.key.value;
-    //     if (!key) return;
-    //     setInflight(true);
-    //     await props.saveConfig(key, values!, files, isPublic);
-    //     setInflight(false);
-    //   }}
-    // >
-    //   {settings}
-    //   {typeField && (
-    //     <Types
-    //       field={typeField}
-    //       value={typeValue as string}
-    //       setValue={(value: string) =>
-    //         setValues({
-    //           ...values,
-    //           configurable: { ...values!.configurable, [typeKey]: value },
-    //         })
-    //       }
-    //       readonly={readonly}
-    //     />
-    //   )}
+    // <div></div>
+    <form
+      className={cn("flex flex-col", props.className)}
+      onSubmit={async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const form = e.target as HTMLFormElement;
+        const key = form.key.value;
+        if (!key) return;
+        setInflight(true);
+        await props.saveConfig(key, values!, files, isPublic);
+        setInflight(false);
+      }}
+    >
+      {settings}
+      {typeField && (
+        <Types
+          field={typeField}
+          value={typeValue as string}
+          setValue={(value: string) =>
+            setValues({
+              ...values,
+              configurable: { ...values!.configurable, [typeKey]: value },
+            })
+          }
+          readonly={readonly}
+        />
+      )}
 
-    //   {typeSpec?.description && (
-    //     <>
-    //       <Label title="Description" />
-    //       <div className="prose mb-8">{typeSpec.description}</div>
-    //     </>
-    //   )}
+      {typeSpec?.description && (
+        <>
+          <Label title="Description" />
+          <div className="prose mb-8">{typeSpec.description}</div>
+        </>
+      )}
 
-    //   {!props.config && typeSpec?.files && (
-    //     <FileUploadDropzone
-    //       state={dropzone}
-    //       files={files}
-    //       setFiles={setFiles}
-    //       className="mb-8"
-    //     />
-    //   )}
-    //   <div
-    //     className={cn(
-    //       "flex flex-col gap-8",
-    //       readonly && "opacity-50 cursor-not-allowed"
-    //     )}
-    //   >
-    //     {orderBy(
-    //       Object.entries(
-    //         props.configSchema?.properties.configurable.properties ?? {}
-    //       ),
-    //       ([key]) => ORDER.indexOf(last(key.split("/"))!)
-    //     ).map(([key, value]) => {
-    //       const title = value.title;
-    //       if (key.split("/")[0].includes("==")) {
-    //         const [parentKey, parentValue] = key.split("/")[0].split("==");
-    //         if (values?.configurable?.[parentKey] !== parentValue) {
-    //           return null;
-    //         }
-    //       } else {
-    //         return null;
-    //       }
-    //       if (
-    //         last(key.split("/")) === "retrieval_description" &&
-    //         !files.length
-    //       ) {
-    //         return null;
-    //       }
-    //       if (value.type === "string" && value.enum) {
-    //         return (
-    //           <SingleOptionField
-    //             key={key}
-    //             id={key}
-    //             field={value}
-    //             title={title}
-    //             value={values?.configurable?.[key] as string}
-    //             setValue={(value: string) =>
-    //               setValues({
-    //                 ...values,
-    //                 configurable: { ...values!.configurable, [key]: value },
-    //               })
-    //             }
-    //             readonly={readonly}
-    //           />
-    //         );
-    //       } else if (value.type === "string") {
-    //         return (
-    //           <StringField
-    //             key={key}
-    //             id={key}
-    //             field={value}
-    //             title={title}
-    //             value={values?.configurable?.[key] as string}
-    //             setValue={(value: string) =>
-    //               setValues({
-    //                 ...values,
-    //                 configurable: { ...values!.configurable, [key]: value },
-    //               })
-    //             }
-    //             readonly={readonly}
-    //           />
-    //         );
-    //       } else if (value.type === "boolean") {
-    //         return (
-    //           <SingleOptionField
-    //             key={key}
-    //             id={key}
-    //             field={{
-    //               ...value,
-    //               type: "string",
-    //               enum: ["Yes", "No"],
-    //             }}
-    //             title={title}
-    //             value={values?.configurable?.[key] ? "Yes" : "No"}
-    //             setValue={(value: string) =>
-    //               setValues({
-    //                 ...values,
-    //                 configurable: {
-    //                   ...values!.configurable,
-    //                   [key]: value === "Yes",
-    //                 },
-    //               })
-    //             }
-    //             readonly={readonly}
-    //           />
-    //         );
-    //       } else if (
-    //         value.type === "array" &&
-    //         value.items?.type === "string" &&
-    //         value.items?.enum
-    //       ) {
-    //         return (
-    //           <MultiOptionField
-    //             key={key}
-    //             id={key}
-    //             field={value}
-    //             title={title}
-    //             value={values?.configurable?.[key] as string[]}
-    //             setValue={(value: string[]) =>
-    //               setValues({
-    //                 ...values,
-    //                 configurable: { ...values!.configurable, [key]: value },
-    //               })
-    //             }
-    //             readonly={readonly}
-    //             descriptions={TOOL_DESCRIPTIONS}
-    //           />
-    //         );
-    //       }
-    //     })}
-    //   </div>
-    // </form>
+      {!props.config && typeSpec?.files && (
+        <FileUploadDropzone
+          state={dropzone}
+          files={files}
+          setFiles={setFiles}
+          className="mb-8"
+        />
+      )}
+      <div
+        className={cn(
+          "flex flex-col gap-8",
+          readonly && "opacity-50 cursor-not-allowed"
+        )}
+      >
+        {orderBy(
+          Object.entries(
+            props.configSchema?.properties.configurable.properties ?? {}
+          ),
+          ([key]) => ORDER.indexOf(last(key.split("/"))!)
+        ).map(([key, value]) => {
+          const title = value.title;
+          if (key.split("/")[0].includes("==")) {
+            const [parentKey, parentValue] = key.split("/")[0].split("==");
+            if (values?.configurable?.[parentKey] !== parentValue) {
+              return null;
+            }
+          } else {
+            return null;
+          }
+          if (
+            last(key.split("/")) === "retrieval_description" &&
+            !files.length
+          ) {
+            return null;
+          }
+          if (value.type === "string" && value.enum) {
+            return (
+              <SingleOptionField
+                key={key}
+                id={key}
+                field={value}
+                title={title}
+                value={values?.configurable?.[key] as string}
+                setValue={(value: string) =>
+                  setValues({
+                    ...values,
+                    configurable: { ...values!.configurable, [key]: value },
+                  })
+                }
+                readonly={readonly}
+              />
+            );
+          } else if (value.type === "string") {
+            return (
+              <StringField
+                key={key}
+                id={key}
+                field={value}
+                title={title}
+                value={values?.configurable?.[key] as string}
+                setValue={(value: string) =>
+                  setValues({
+                    ...values,
+                    configurable: { ...values!.configurable, [key]: value },
+                  })
+                }
+                readonly={readonly}
+              />
+            );
+          } else if (value.type === "boolean") {
+            return (
+              <SingleOptionField
+                key={key}
+                id={key}
+                field={{
+                  ...value,
+                  type: "string",
+                  enum: ["Yes", "No"],
+                }}
+                title={title}
+                value={values?.configurable?.[key] ? "Yes" : "No"}
+                setValue={(value: string) =>
+                  setValues({
+                    ...values,
+                    configurable: {
+                      ...values!.configurable,
+                      [key]: value === "Yes",
+                    },
+                  })
+                }
+                readonly={readonly}
+              />
+            );
+          } else if (
+            value.type === "array" &&
+            value.items?.type === "string" &&
+            value.items?.enum
+          ) {
+            return (
+              <MultiOptionField
+                key={key}
+                id={key}
+                field={value}
+                title={title}
+                value={values?.configurable?.[key] as string[]}
+                setValue={(value: string[]) =>
+                  setValues({
+                    ...values,
+                    configurable: { ...values!.configurable, [key]: value },
+                  })
+                }
+                readonly={readonly}
+                descriptions={TOOL_DESCRIPTIONS}
+              />
+            );
+          }
+        })}
+      </div>
+    </form>
   );
 }
